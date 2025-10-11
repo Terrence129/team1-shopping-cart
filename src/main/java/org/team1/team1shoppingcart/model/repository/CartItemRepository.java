@@ -29,7 +29,7 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
     List<CartItem> findAllByCartId(Long cartId);
 
-    List<CartItem> findCartItemsByCartAndProduct(Cart cart, Product product);
+    CartItem findCartItemsByCartAndProduct(Cart cart, Product product);
     @Transactional
     @Modifying
     void removeCartItemsByCartAndProduct(Cart cart, Product product);
@@ -43,4 +43,5 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
     @Query("UPDATE CartItem c SET c.quantity = c.quantity + :quantity WHERE c.cart = :cart AND c.product = :product")
     void updateCartItemQuantity(@Param("cart") Cart cart, @Param("product") Product product, @Param("quantity") int quantity);
 
+    void removeCartItemsByCart(Cart cart);
 }

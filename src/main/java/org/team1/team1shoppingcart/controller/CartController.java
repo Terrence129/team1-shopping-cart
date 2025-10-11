@@ -54,8 +54,14 @@ public class CartController {
         return ResponseEntity.ok(Map.of("success", true));
     }
 
-    @PostMapping("/checkout")
-    public ResponseEntity<?> checkoutCart(HttpSession session, @RequestBody CheckoutReq req){
+
+    @DeleteMapping("/empty")
+    public ResponseEntity<?> emptyCart(HttpSession session) {
+        String username = (String) session.getAttribute("username");
+        if (username == null) {
+            throw new UnauthorizedException("not logged in");
+        }
+        cartService.emptyCart(username);
         return null;
     }
 

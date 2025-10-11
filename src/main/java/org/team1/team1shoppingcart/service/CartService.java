@@ -52,6 +52,7 @@ public class CartService {
                     item.setQuantity(i.getQuantity());
                     item.setUnitPrice(i.getUnitPrice());
                     item.setSubtotal(i.getUnitPrice().multiply(BigDecimal.valueOf(i.getQuantity())));
+                    item.setStock(i.getProduct().getStock());
                     return item;
                 }
         ).toList();
@@ -83,39 +84,51 @@ public class CartService {
         User currentUser = userRepository.findByUsername(username);
         Cart cart = cartRepository.findCartByUser(currentUser);
         // check stock
-        if (productRepository.getStock(productId) < quantity){
+        Integer stock = productRepository.getStock(productId);
+        if (stock < quantity){
             throw new BusinessException("Not enough stock");
         }
+
         if (cart == null) {
             // create a cart
             cart = createCart(currentUser);
         }
         Product product = productRepository.findProductById(productId);
-        List<CartItem> cartItems = cartItemRepository.findCartItemsByCartAndProduct(cart, product);
-        if (!cartItems.isEmpty()) {
+        CartItem cartItem = cartItemRepository.findCartItemsByCartAndProduct(cart, product);
+        if (cartItem != null) {
+            // check stock with current user's cart
+            Integer qtyInCart = cartItem.getQuantity();
+            if (qtyInCart + quantity > stock) {
+                throw new BusinessException("Not enough stock. You already have this item in your cart.");
+            }
             cartItemRepository.updateCartItemQuantity(cart, product, quantity);
             return;
         }
-        CartItem cartItem = new CartItem();
-        cartItem.setCart(cart);
-        cartItem.setProduct(product);
-        cartItem.setQuantity(quantity);
-        cartItem.setUnitPrice(product.getPrice());
-        cartItem.setCreatedAt(Instant.now());
-        cartItem.setUpdatedAt(Instant.now());
-        cartItemRepository.save(cartItem);
+        CartItem newCartItem = new CartItem();
+        newCartItem.setCart(cart);
+        newCartItem.setProduct(product);
+        newCartItem.setQuantity(quantity);
+        newCartItem.setUnitPrice(product.getPrice());
+        newCartItem.setCreatedAt(Instant.now());
+        newCartItem.setUpdatedAt(Instant.now());
+        cartItemRepository.save(newCartItem);
     }
 
     public void removeItemFromCart(String username, Long productId, Integer quantity) {
         User currentUser = userRepository.findByUsername(username);
         Cart cart = cartRepository.findCartByUser(currentUser);
         Product product = productRepository.findProductById(productId);
-        List<CartItem> cartItems = cartItemRepository.findCartItemsByCartAndProduct(cart, product);
-        if (cartItems.size() < quantity) {
+        if (product.getStock() <= quantity) {
             cartItemRepository.removeCartItemsByCartAndProduct(cart, product);
             return;
         }
         cartItemRepository.updateCartItemQuantity(cart, product, -quantity);
 
+    }
+
+    public void emptyCart(String username) {
+        User currentUser = userRepository.findByUsername(username);
+        Cart cart = cartRepository.findCartByUser(currentUser);
+        cartItemRepository.removeCartItemsByCart(cart);
     }
 }

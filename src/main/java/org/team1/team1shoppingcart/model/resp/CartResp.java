@@ -38,5 +38,6 @@ public class CartResp {
         private Integer quantity;
         private BigDecimal unitPrice;
         private BigDecimal subtotal;
+        private Integer stock;
     }
 }
