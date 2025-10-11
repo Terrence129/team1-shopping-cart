@@ -58,9 +58,9 @@ public class AuthController {
     public ResponseEntity<?> getCurrentUser(HttpSession session) {
         String username = (String) session.getAttribute("username");
         User user = authService.getUserByUsername(username);
-        if (user != null) {
-            return ResponseEntity.ok(Map.of("username", user));
-        }
-        return ResponseEntity.status(401).body(Map.of("success", false));
+
+        return user != null ? ResponseEntity.ok(Map.of("success", true, "username", user.getUsername()))
+                : ResponseEntity.ok(Map.of("success", false));
+
     }
 }

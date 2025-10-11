@@ -10,6 +10,7 @@ import org.team1.team1shoppingcart.model.repository.UserRepository;
 import org.team1.team1shoppingcart.model.req.LoginReq;
 import org.team1.team1shoppingcart.model.req.RegisterReq;
 
+import java.time.Instant;
 import java.util.Map;
 
 /**
@@ -60,6 +61,8 @@ public class AuthService {
         user.setAddress(req.getAddress());
         user.setRole("USER");
         user.setActive(true);
+        user.setCreatedAt(Instant.now());
+        user.setUpdatedAt(Instant.now());
 
         userRepository.save(user);
         return user;
