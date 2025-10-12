@@ -5,10 +5,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.team1.team1shoppingcart.exception.BusinessException;
 import org.team1.team1shoppingcart.model.entity.User;
 import org.team1.team1shoppingcart.model.repository.UserRepository;
 import org.team1.team1shoppingcart.model.req.LoginReq;
 import org.team1.team1shoppingcart.model.req.RegisterReq;
+import org.team1.team1shoppingcart.model.resp.UserInfoResp;
 
 import java.time.Instant;
 import java.util.Map;
@@ -31,11 +33,11 @@ public class AuthService {
         User user = userRepository.findByUsername(req.getUsername());
         if (user == null) {
             log.info("User not found: {}", req.getUsername());
-            return null;
+            throw new BusinessException("User not found");
         }
         if (!user.getPassword().equals(req.getPassword())) {
             log.info("Wrong password: {}", req.getPassword());
-            return null;
+            throw new BusinessException("Wrong password");
         }
         return user;
     }
@@ -43,11 +45,11 @@ public class AuthService {
     public User register(RegisterReq req) {
         if (userRepository.existsByUsername(req.getUsername())) {
             log.info("Username already in use: {}", req.getUsername());
-            return null;
+            throw new BusinessException("Username already in use");
         }
         if (userRepository.existsByEmail(req.getEmail())) {
             log.info("Email already in use: {}", req.getEmail());
-            return null;
+            throw new BusinessException("Email already in use");
         }
 
         User user = new User();
@@ -75,5 +77,25 @@ public class AuthService {
             return null;
         }
         return user;
+    }
+
+    public UserInfoResp getUserInfoByUsername(String username) {
+        User user = getUserByUsername(username);
+        if (user == null) {
+            log.info("User not found: {}", username);
+        }
+        UserInfoResp resp = new UserInfoResp();
+        resp.setId(user.getId());
+        resp.setUsername(user.getUsername());
+        resp.setFirstName(user.getFirstName());
+        resp.setLastName(user.getLastName());
+        resp.setFullName(user.getFullName());
+        resp.setEmail(user.getEmail());
+        resp.setPhone(user.getPhone());
+        resp.setAddress(user.getAddress());
+        resp.setRole(user.getRole());
+        resp.setCreatedAt(user.getCreatedAt());
+        resp.setUpdatedAt(user.getUpdatedAt());
+        return resp;
     }
 }

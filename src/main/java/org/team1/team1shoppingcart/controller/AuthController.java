@@ -1,6 +1,5 @@
 package org.team1.team1shoppingcart.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -60,7 +59,17 @@ public class AuthController {
         User user = authService.getUserByUsername(username);
 
         return user != null ? ResponseEntity.ok(Map.of("success", true, "username", user.getUsername()))
-                : ResponseEntity.ok(Map.of("success", false));
+                : ResponseEntity.status(401).body(Map.of("success", false));
 
+    }
+
+    @GetMapping("/info")
+    public ResponseEntity<?> getUserInfo(HttpSession session) {
+        String username = (String) session.getAttribute("username");
+        User user = authService.getUserByUsername(username);
+        if (user != null) {
+            return ResponseEntity.ok(Map.of("success", true, "info", authService.getUserInfoByUsername(username)));
+        }
+        return ResponseEntity.status(401).body(Map.of("success", false));
     }
 }

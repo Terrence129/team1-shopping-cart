@@ -39,7 +39,8 @@ public class CartService {
 
         Cart cart = cartRepository.findCartByUser(currentUser);
         if (cart == null) {
-            throw new BusinessException("Cart not found");
+            // create a cart
+            createCart(currentUser);
         }
         List<CartItem> cartItems = cartItemRepository.findAllByCartId(cart.getId());
         List<CartResp.Item> cartRespItems = cartItems.stream().map(
