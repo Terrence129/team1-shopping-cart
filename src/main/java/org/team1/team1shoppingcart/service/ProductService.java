@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.team1.team1shoppingcart.model.entity.Product;
 import org.team1.team1shoppingcart.model.repository.ProductRepository;
 
+import java.util.Locale;
+
 /**
  * @author chenyaqi
  * @Description
@@ -27,7 +29,7 @@ public class ProductService {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         return (keyword==null || keyword.isBlank())
                 ? productRepository.findByVisibleTrue(pageable)
-                : productRepository.findByVisibleTrueAndNameContainingIgnoreCase(keyword, pageable);
+                : productRepository.searchVisibleAndKeyword(keyword.toUpperCase(Locale.ROOT), pageable);
     }
 
     public Product getProduct(Long id) {

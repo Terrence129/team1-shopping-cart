@@ -26,6 +26,15 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<Product> findByVisibleTrue(Pageable pageable);
 
     Page<Product> findByVisibleTrueAndNameContainingIgnoreCase(String keyword, Pageable pageable);
+    @Query("""
+            select p from Product p
+            where p.visible = true
+              and (
+                   p.name like concat('%', :kw, '%')
+                   or p.description like concat('%', :kw, '%')
+              )
+            """)
+    Page<Product> searchVisibleAndKeyword(@Param("kw") String keyword, Pageable pageable);
 
     @Query("SELECT p FROM Product p WHERE p.active = true ORDER BY p.rating DESC, p.reviewCount DESC")
     Page<Product> findPopularProducts(Pageable pageable);
