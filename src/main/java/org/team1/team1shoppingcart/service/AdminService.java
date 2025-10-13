@@ -165,7 +165,7 @@ public class AdminService {
             throw new BusinessException("Product not found");
         }
         try {
-            if (!image.isEmpty()) {
+            if (image != null) {
                 // Check file type
                 String contentType = image.getContentType();
                 if (!isImage(contentType)) {
