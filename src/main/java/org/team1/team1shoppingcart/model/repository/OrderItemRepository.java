@@ -2,6 +2,7 @@ package org.team1.team1shoppingcart.model.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.team1.team1shoppingcart.model.entity.OrderItem;
+import org.team1.team1shoppingcart.model.entity.Product;
 
 import java.util.List;
 
@@ -14,4 +15,6 @@ import java.util.List;
 public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
 
     List<OrderItem> findAllByOrderId(Long id);
+
+    void deleteAllByProduct(Product product);
 }

@@ -1,6 +1,8 @@
 package org.team1.team1shoppingcart.model.repository;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -48,4 +50,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     // get stock
     @Query("select p.stock from Product p where p.id = :productId")
     Integer getStock(@Param("productId") Long productId);
+
+    Product findProductByName(@Size(max = 100) @NotNull String name);
 }

@@ -1,6 +1,7 @@
 package org.team1.team1shoppingcart.model.repository;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -44,4 +45,6 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
     void updateCartItemQuantity(@Param("cart") Cart cart, @Param("product") Product product, @Param("quantity") int quantity);
 
     void removeCartItemsByCart(Cart cart);
+
+    void deleteAllByProduct(@NotNull Product product);
 }

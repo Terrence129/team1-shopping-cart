@@ -119,7 +119,8 @@ public class CartService {
         User currentUser = userRepository.findByUsername(username);
         Cart cart = cartRepository.findCartByUser(currentUser);
         Product product = productRepository.findProductById(productId);
-        if (product.getStock() <= quantity) {
+        CartItem cartItem = cartItemRepository.findCartItemsByCartAndProduct(cart, product);
+        if (cartItem.getQuantity() <= quantity) {
             cartItemRepository.removeCartItemsByCartAndProduct(cart, product);
             return;
         }
